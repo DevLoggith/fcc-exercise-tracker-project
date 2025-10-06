@@ -4,6 +4,7 @@ const cors = require("cors");
 require("dotenv").config();
 
 const connectDB = require("./db");
+const { User, Exercise } = require("./models");
 
 app.use(cors());
 app.use(express.static("public"));
