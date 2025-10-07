@@ -13,28 +13,40 @@ connectDB();
 
 app.use(cors());
 app.use(express.static("public"));
+app.use(express.urlencoded({ extended: false }))
 app.get("/", (req, res) => {
     const filePath = new URL('./views/index.html', import.meta.url);
 	res.sendFile(fileURLToPath(filePath));
 });
 
 app.post("/api/users", async (req, res) => {
-    console.log("req.body:", req.body);
-    if (!req.body.username) {
-        return res.status(422).json({error: "username can not be empty"});
+    if (!req.body.username || (req.body.username.trim().length === 0)) {
+        return res.status(422).json({ error: "username can not be empty" });
+    }
+
+    const lowerCaseUsername = req.body.username.toLowerCase();
+
+    try {
+        const existingUser = await User.findOne({ username: lowerCaseUsername })
+        if (existingUser) {
+            return res.status(409).json({ error: "username already in use" });
+        }
+    } catch (err) {
+        return res.json({ error: err.message });
     }
 
     try {
-        const existingUser = await User.findOne({username: req.body.username})
-        if (existingUser) {
-            return res.status(409).json({error: "username already in use"});
-        }
-    } catch (err) {
-        return res.json({error: err.message});
-    }
+        const newUser = new User({
+            username: lowerCaseUsername
+        });
 
-    // response has to be {username: <username>, _id: <MongoDB _id string>}
-    // (use ObjectId().toString() to return MongoDB generated ID as string)
+        await newUser.save();
+        const newUserId = await User.findOne({ username: lowerCaseUsername }).select("_id");
+        res.status(201).json({ username: newUser.username, _id: newUserId._id.toString() })
+
+    } catch (err) {
+        res.json({ error: err.message });
+    }
 });
 
 app.post("/api/users/:_id/exercises", (req, res) => {
