@@ -19,45 +19,47 @@ app.get("/", (req, res) => {
 	res.sendFile(fileURLToPath(filePath));
 });
 
-app.post("/api/users", async (req, res) => {
-    if (!req.body.username || (req.body.username.trim().length === 0)) {
-        return res.status(422).json({ error: "username can not be empty" });
-    }
-
-    const lowerCaseUsername = req.body.username.toLowerCase();
-
-    try {
-        const existingUser = await User.findOne({ username: lowerCaseUsername })
-        if (existingUser) {
-            return res.status(409).json({ error: "username already in use" });
+//users POST & GET routes
+app.route("/api/users")
+    .post(async (req, res) => {
+        if (!req.body.username || (req.body.username.trim().length === 0)) {
+            return res.status(422).json({ error: "username can not be empty" });
         }
-    } catch (err) {
-        return res.json({ error: err.message });
-    }
 
-    try {
-        const newUser = new User({
-            username: lowerCaseUsername
-        });
+        const lowerCaseUsername = req.body.username.toLowerCase();
 
-        await newUser.save();
-        const newUserId = await User.findOne({ username: lowerCaseUsername }).select("_id");
-        res.status(201).json({ username: newUser.username, _id: newUserId._id.toString() })
+        try {
+            const existingUser = await User.findOne({ username: lowerCaseUsername })
+            if (existingUser) {
+                return res.status(409).json({ error: "username already in use" });
+            }
+        } catch (err) {
+            return res.json({ error: err.message });
+        }
 
-    } catch (err) {
-        res.json({ error: err.message });
-    }
-});
+        try {
+            const newUser = new User({
+                username: lowerCaseUsername
+            });
+
+            await newUser.save();
+            const newUserId = await User.findOne({ username: lowerCaseUsername }).select("_id");
+            res.status(201).json({ username: newUser.username, _id: newUserId._id.toString() })
+
+        } catch (err) {
+            res.json({ error: err.message });
+        }
+    })
+
+    .get (async (req, res) => {
+        // returns an array
+        // (simply execute .find({}) for all users documents)
+    })
 
 app.post("/api/users/:_id/exercises", (req, res) => {
     // post with "description", "duration", & optionally "date". If no date supplied, use the
         // current date.
     // response = user object with exercise fields added
-});
-
-app.get("/api/users", (req, res) => {
-    // returns an array
-    // (simply execute .find({}) for all users documents)
 });
 
 app.get("/api/users/:_id/logs{/:from}{/:to}{/:limit}", (req, res) => {
