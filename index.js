@@ -1,18 +1,37 @@
-const express = require("express");
-const app = express();
-const cors = require("cors");
-require("dotenv").config();
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import { fileURLToPath } from 'url';
 
-const connectDB = require("./db");
-const { User, Exercise } = require("./models");
+import { connectDB } from './db.js';
+import { User, Exercise } from './models.js';
+
+
+const app = express();
+dotenv.config();
 
 app.use(cors());
 app.use(express.static("public"));
 app.get("/", (req, res) => {
-	res.sendFile(__dirname + "/views/index.html");
+    const filePath = new URL('./views/index.html', import.meta.url);
+	res.sendFile(fileURLToPath(filePath));
 });
 
-app.post("/api/users", (req, res) => {
+app.post("/api/users", async (req, res) => {
+    console.log("req.body:", req.body);
+    if (!req.body.username) {
+        return res.status(422).json({error: "username can not be empty"});
+    }
+
+    try {
+        const existingUser = await User.findOne({username: req.body.username})
+        if (existingUser) {
+            return res.status(409).json({error: "username already in use"});
+        }
+    } catch (err) {
+        return res.json({error: err.message});
+    }
+    
     // response has to be {username: <username>, _id: <MongoDB _id string>}
     // (use ObjectId().toString() to return MongoDB generated ID as string)
 });

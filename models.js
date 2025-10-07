@@ -26,7 +26,6 @@ const exerciseSchema = new Schema({
 });
 
 
-module.exports = {
-	User: mongoose.model("User", userSchema),
-	Exercise: mongoose.model("Exercise", exerciseSchema),
-};
+const User = mongoose.model("User", userSchema);
+const Exercise = mongoose.model("Exercise", exerciseSchema);
+export { User, Exercise };
