@@ -19,7 +19,7 @@ app.get("/", (req, res) => {
 	res.sendFile(fileURLToPath(filePath));
 });
 
-//users POST & GET routes
+
 app.route("/api/users")
     .post(async (req, res) => {
         if (!req.body.username || (req.body.username.trim().length === 0)) {
@@ -47,11 +47,17 @@ app.route("/api/users")
             res.status(201).json({ username: newUser.username, _id: newUserId._id.toString() })
 
         } catch (err) {
-            res.json({ error: err.message });
+            res.status(500).json({ error: err.message });
         }
     })
 
     .get (async (req, res) => {
+        try {
+            const allUsers = await User.find({});
+            res.json(allUsers);
+        } catch (err) {
+            res.status(500).json({ error: err.message })
+        }
         // returns an array
         // (simply execute .find({}) for all users documents)
     })
