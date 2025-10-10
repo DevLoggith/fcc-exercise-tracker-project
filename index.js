@@ -9,6 +9,7 @@ import { User, Exercise } from './models.js';
 
 const app = express();
 dotenv.config();
+// TODO: move to crud.js?
 connectDB();
 
 app.use(cors());
@@ -22,12 +23,13 @@ app.get("/", (req, res) => {
 
 app.route("/api/users")
     .post(async (req, res) => {
+        // TODO: use "isUsernameValid()" here
         if (!req.body.username || (req.body.username.trim().length === 0)) {
             return res.status(422).json({ error: "username can not be empty" });
         }
 
         const lowerCaseUsername = req.body.username.toLowerCase();
-
+        // TODO: use "isExistingUser()" here
         try {
             const existingUser = await User.findOne({ username: lowerCaseUsername })
             if (existingUser) {
@@ -36,15 +38,15 @@ app.route("/api/users")
         } catch (err) {
             return res.json({ error: err.message });
         }
-
+        // TODO: use "createNewUser()" here
         try {
             const newUser = new User({
                 username: lowerCaseUsername
             });
 
             await newUser.save();
-            const newUserId = await User.findOne({ username: lowerCaseUsername }).select("_id");
-            res.status(201).json({ username: newUser.username, _id: newUserId._id.toString() })
+            const newSavedUser = await User.findOne({ username: lowerCaseUsername });
+            res.status(201).json({ username: newSavedUser.username, _id: newSavedUser.id });
 
         } catch (err) {
             res.status(500).json({ error: err.message });
@@ -52,14 +54,13 @@ app.route("/api/users")
     })
 
     .get (async (req, res) => {
+        // TODO: use "returnAllUsers()" here
         try {
             const allUsers = await User.find({});
             res.json(allUsers);
         } catch (err) {
             res.status(500).json({ error: err.message })
         }
-        // returns an array
-        // (simply execute .find({}) for all users documents)
     })
 
 app.post("/api/users/:_id/exercises", (req, res) => {
