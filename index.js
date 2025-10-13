@@ -4,12 +4,12 @@ import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 
 import { connectDB } from './db.js';
-import { User, Exercise } from './models.js';
+import { isUsernameValid } from './helpers.js';
+import { isExistingUser, createNewUser, returnAllUsers } from './crud.js';
 
 
 const app = express();
 dotenv.config();
-// TODO: move to crud.js?
 connectDB();
 
 app.use(cors());
@@ -23,44 +23,23 @@ app.get("/", (req, res) => {
 
 app.route("/api/users")
     .post(async (req, res) => {
-        // TODO: use "isUsernameValid()" here
-        if (!req.body.username || (req.body.username.trim().length === 0)) {
+        if (!isUsernameValid(req.body.username)) {
             return res.status(422).json({ error: "username can not be empty" });
         }
 
         const lowerCaseUsername = req.body.username.toLowerCase();
-        // TODO: use "isExistingUser()" here
-        try {
-            const existingUser = await User.findOne({ username: lowerCaseUsername })
-            if (existingUser) {
-                return res.status(409).json({ error: "username already in use" });
-            }
-        } catch (err) {
-            return res.json({ error: err.message });
-        }
-        // TODO: use "createNewUser()" here
-        try {
-            const newUser = new User({
-                username: lowerCaseUsername
-            });
 
-            await newUser.save();
-            const newSavedUser = await User.findOne({ username: lowerCaseUsername });
-            res.status(201).json({ username: newSavedUser.username, _id: newSavedUser.id });
-
-        } catch (err) {
-            res.status(500).json({ error: err.message });
+        if (await isExistingUser(lowerCaseUsername)) {
+            return res.status(409).json({ error: "username already in use" });
         }
+
+        const newSavedUser = await createNewUser(lowerCaseUsername);
+        res.status(201).json({ username: newSavedUser.username, _id: newSavedUser.id });
     })
 
     .get (async (req, res) => {
-        // TODO: use "returnAllUsers()" here
-        try {
-            const allUsers = await User.find({});
-            res.json(allUsers);
-        } catch (err) {
-            res.status(500).json({ error: err.message })
-        }
+        const allUsers = await returnAllUsers();
+        res.status(200).json(allUsers);
     })
 
 app.post("/api/users/:_id/exercises", (req, res) => {

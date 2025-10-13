@@ -1,8 +1,6 @@
 import { User, Exercise } from './models.js';
 
-connectDB();
 
-// TODO: import & use in index.js
 async function isExistingUser(username) {
     try {
         const existingUser = await User.findOne({ username: username });
@@ -14,7 +12,7 @@ async function isExistingUser(username) {
         console.error("error:", err.message);
     }
 }
-// TODO: import & use in index.js
+
 async function createNewUser(username) {
     try {
         const newUser = new User({
@@ -22,14 +20,14 @@ async function createNewUser(username) {
         });
 
         await newUser.save();
-        const newSavedUser = await User.findOne({ username: lowerCaseUsername });
+        const newSavedUser = await User.findOne({ username: username });
         return newSavedUser;
 
     } catch (err) {
         console.error("error:", err.message);
     }
 }
-// TODO: import & use in index.js
+
 async function returnAllUsers() {
     try {
         const allUsers = await User.find({});
