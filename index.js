@@ -23,23 +23,32 @@ app.get("/", (req, res) => {
 
 app.route("/api/users")
     .post(async (req, res) => {
-        if (!isUsernameValid(req.body.username)) {
+        try {
+            if (!isUsernameValid(req.body.username)) {
             return res.status(422).json({ error: "username can not be empty" });
+            }
+
+            const lowerCaseUsername = req.body.username.toLowerCase();
+
+            if (await isExistingUser(lowerCaseUsername)) {
+                return res.status(409).json({ error: "username already in use" });
+            }
+
+            const newSavedUser = await createNewUser(lowerCaseUsername);
+            res.status(201).json({ username: newSavedUser.username, _id: newSavedUser.id });
+
+        } catch (err) {
+            res.status(500).json({ error: "An internal server error occurred" });
         }
-
-        const lowerCaseUsername = req.body.username.toLowerCase();
-
-        if (await isExistingUser(lowerCaseUsername)) {
-            return res.status(409).json({ error: "username already in use" });
-        }
-
-        const newSavedUser = await createNewUser(lowerCaseUsername);
-        res.status(201).json({ username: newSavedUser.username, _id: newSavedUser.id });
     })
 
     .get (async (req, res) => {
-        const allUsers = await returnAllUsers();
-        res.status(200).json(allUsers);
+        try {
+            const allUsers = await returnAllUsers();
+            res.status(200).json(allUsers);
+        } catch (err) {
+            res.status(500).json({ error: "An internal server error occurred" });
+        }
     })
 
 app.post("/api/users/:_id/exercises", (req, res) => {

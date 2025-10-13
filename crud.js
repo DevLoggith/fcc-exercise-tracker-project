@@ -10,6 +10,7 @@ async function isExistingUser(username) {
         return false;
     } catch (err) {
         console.error("error:", err.message);
+        throw err;
     }
 }
 
@@ -25,6 +26,7 @@ async function createNewUser(username) {
 
     } catch (err) {
         console.error("error:", err.message);
+        throw err;
     }
 }
 
@@ -35,6 +37,7 @@ async function returnAllUsers() {
 
     } catch (err) {
         console.error("error:", err.message);
+        throw err;
     }
 }
 
