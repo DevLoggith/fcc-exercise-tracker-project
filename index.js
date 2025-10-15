@@ -23,13 +23,13 @@ app.get("/", (req, res) => {
 
 app.route("/api/users")
     .post(async (req, res) => {
+        if (!isUsernameValid(req.body.username)) {
+        return res.status(422).json({ error: "username can not be empty" });
+        }
+
+        const lowerCaseUsername = req.body.username.toLowerCase();
+
         try {
-            if (!isUsernameValid(req.body.username)) {
-            return res.status(422).json({ error: "username can not be empty" });
-            }
-
-            const lowerCaseUsername = req.body.username.toLowerCase();
-
             if (await isExistingUser(lowerCaseUsername)) {
                 return res.status(409).json({ error: "username already in use" });
             }
