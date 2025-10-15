@@ -21,8 +21,7 @@ async function createNewUser(username) {
         });
 
         await newUser.save();
-        const newSavedUser = await User.findOne({ username: username });
-        return newSavedUser;
+        return newUser;
 
     } catch (err) {
         console.error("error:", err.message);
