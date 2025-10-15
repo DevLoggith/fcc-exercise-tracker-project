@@ -6,14 +6,13 @@ const userSchema = new Schema({
 		type: String,
 		required: true,
 	},
+	exercises: [{
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "Exercise"
+	}]
 });
 
 const exerciseSchema = new Schema({
-	user: {
-		type: mongoose.Schema.Types.ObjectId,
-		ref: "User",
-		required: true,
-	},
 	description: {
 		type: String,
 		required: true,
@@ -23,6 +22,11 @@ const exerciseSchema = new Schema({
 		required: true,
 	},
 	date: String,
+	user: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "User",
+		required: true,
+	},
 });
 
 
