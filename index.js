@@ -53,7 +53,7 @@ app.route("/api/users")
 
 app.post("/api/users/:_id/exercises", (req, res) => {
     // post with "description", "duration", & optionally "date". If no date supplied, use the
-        // current date.
+    // current date.
     // response = user object with exercise fields added
 });
 
