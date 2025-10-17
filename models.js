@@ -21,10 +21,10 @@ const exerciseSchema = new Schema({
 		type: Number,
 		required: true,
 	},
-	// TODO: should "date" be required in the schema? 
-	// date will be added to exercise whether user supplied or not; either user supplied or the
-	// current date/time.
-	date: String,
+	date: {
+		type: String,
+		required: true,
+	},
 	user: {
 		type: mongoose.Schema.Types.ObjectId,
 		ref: "User",

@@ -24,7 +24,7 @@ app.get("/", (req, res) => {
 app.route("/api/users")
     .post(async (req, res) => {
         if (!isUsernameValid(req.body.username)) {
-        return res.status(422).json({ error: "username can not be empty" });
+            return res.status(422).json({ error: "username can not be empty" });
         }
 
         const lowerCaseUsername = req.body.username.toLowerCase();
@@ -53,7 +53,7 @@ app.route("/api/users")
 
 app.post("/api/users/:_id/exercises", (req, res) => {
     // post with "description", "duration", & optionally "date". If no date supplied, use the
-    // current date.
+    // current date, date = required in schema
     // response = user object with exercise fields added
 });
 
@@ -63,6 +63,7 @@ app.get("/api/users/:_id/logs{/:from}{/:to}{/:limit}", (req, res) => {
     // returns the user object with a log field array thats an array of all the exercises added with
         // "description", "duration", & "date" fields
     // can add "from", "to", & "limit" parameters to request to receive part of the log
+    // "from" & "to" should be yyyy-mm-dd format and "limit" should be an integer
 });
 
 const listener = app.listen(process.env.PORT || 3000, () => {
