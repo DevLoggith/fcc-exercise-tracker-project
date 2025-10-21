@@ -6,7 +6,6 @@ import { fileURLToPath } from 'url';
 import { connectDB } from './db.js';
 import { validateUserForm, validateExerciseForm } from './helpers.js';
 import * as crud from './crud.js';
-import { User, Exercise } from './models.js';
 
 
 const app = express();
