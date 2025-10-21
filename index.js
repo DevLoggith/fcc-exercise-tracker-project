@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 
 import { connectDB } from './db.js';
-import { isUsernameValid } from './helpers.js';
+import { validateUserForm, validateExerciseForm } from './helpers.js';
 import { isExistingUser, createNewUser, returnAllUsers } from './crud.js';
 
 
@@ -22,11 +22,7 @@ app.get("/", (req, res) => {
 
 
 app.route("/api/users")
-    .post(async (req, res) => {
-        if (!isUsernameValid(req.body.username)) {
-            return res.status(422).json({ error: "username can not be empty" });
-        }
-
+    .post(validateUserForm, async (req, res) => {
         const lowerCaseUsername = req.body.username.toLowerCase();
 
         try {
@@ -51,7 +47,12 @@ app.route("/api/users")
         }
     })
 
-app.post("/api/users/:_id/exercises", (req, res) => {
+app.post("/api/users/:_id/exercises", validateExerciseForm, (req, res) => {
+    if (!req.body.date || req.body.date.trim() === "") {
+        const date = new Date();
+        const formattedDate = date.toISOString().split("T")[0];
+        req.body.date = formattedDate;
+    }
     // post with "description", "duration", & optionally "date". If no date supplied, use the
     // current date, date = required in schema
     // response = user object with exercise fields added
