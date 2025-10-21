@@ -7,10 +7,6 @@ function validateUserForm(req, res, next) {
 
 function validateExerciseForm(req, res, next) {
     const errors = [];
-    console.log(req.body);
-    if (!req.body[":_id"] || req.body[":_id"].trim() === "") {
-        errors.push("user id can not be empty");
-    }
 
     if (!req.body.description || req.body.description.trim() === "") {
         errors.push("exercise description can not be empty");
