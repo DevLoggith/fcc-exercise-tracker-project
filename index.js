@@ -5,7 +5,8 @@ import { fileURLToPath } from 'url';
 
 import { connectDB } from './db.js';
 import { validateUserForm, validateExerciseForm } from './helpers.js';
-import { isExistingUser, createNewUser, returnAllUsers } from './crud.js';
+import * as crud from './crud.js';
+import { User, Exercise } from './models.js';
 
 
 const app = express();
@@ -26,11 +27,11 @@ app.route("/api/users")
         const lowerCaseUsername = req.body.username.toLowerCase();
 
         try {
-            if (await isExistingUser(lowerCaseUsername)) {
+            if (await crud.isExistingUser(lowerCaseUsername)) {
                 return res.status(409).json({ error: "username already in use" });
             }
 
-            const newSavedUser = await createNewUser(lowerCaseUsername);
+            const newSavedUser = await crud.createNewUser(lowerCaseUsername);
             res.status(201).json({ username: newSavedUser.username, _id: newSavedUser.id });
 
         } catch (err) {
@@ -40,22 +41,42 @@ app.route("/api/users")
 
     .get (async (req, res) => {
         try {
-            const allUsers = await returnAllUsers();
+            const allUsers = await crud.returnAllUsers();
             res.status(200).json(allUsers);
         } catch (err) {
             res.status(500).json({ error: "An internal server error occurred" });
         }
     })
 
-app.post("/api/users/:_id/exercises", validateExerciseForm, (req, res) => {
+app.post("/api/users/:_id/exercises", validateExerciseForm, async (req, res) => {
+    const userID = req.params._id;
+    const description = req.body.description;
+    const duration = req.body.duration;
+
+    // TODO: add additional validation for "date" to make sure it's (user) imputed in the correct format
     if (!req.body.date || req.body.date.trim() === "") {
         const date = new Date();
         const formattedDate = date.toISOString().split("T")[0];
         req.body.date = formattedDate;
     }
-    // post with "description", "duration", & optionally "date". If no date supplied, use the
-    // current date, date = required in schema
-    // response = user object with exercise fields added
+
+    const date = req.body.date;
+
+    // TODO: add validation to return error if no uses with that ID exists
+    try {
+        const newExercise = await crud.createNewExercise(userID, description, duration, date);
+        const updatedUser = await crud.returnOneUser(userID);
+        // TODO: find out why test #8 is not passing regarding the returned object
+        res.status(201).json({
+            username: updatedUser.username,
+            description: newExercise.description,
+            duration: newExercise.duration,
+            date: newExercise.date,
+            _id: newExercise._id
+        });
+    } catch (err) {
+        res.status(500).json({ error: "An internal server error occurred" });
+    }
 });
 
 app.get("/api/users/:_id/logs{/:from}{/:to}{/:limit}", (req, res) => {
