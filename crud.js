@@ -29,6 +29,17 @@ async function createNewUser(username) {
     }
 }
 
+async function returnOneUser(userID) {
+    try {
+        const user = await User.findOne({ _id: userID });
+        return user;
+
+    } catch (err) {
+        console.error("error:", err.message);
+        throw err;
+    }
+}
+
 async function returnAllUsers() {
     try {
         const allUsers = await User.find({});
@@ -40,5 +51,24 @@ async function returnAllUsers() {
     }
 }
 
+async function createNewExercise(userID, description, duration, date) {
+    try {
+        const newExercise = new Exercise({
+            description: description,
+            duration: duration,
+            date: date,
+            user: userID
+        });
 
-export { isExistingUser, createNewUser, returnAllUsers };
+        await newExercise.save();
+        await User.updateOne({ _id: userID }, { $push: { exercises: newExercise.id } })
+        return newExercise;
+
+    } catch (err) {
+        console.error("error:", err.message);
+        throw err;
+    }
+}
+
+
+export { isExistingUser, createNewUser, returnOneUser, returnAllUsers, createNewExercise };
