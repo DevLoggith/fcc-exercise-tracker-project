@@ -31,7 +31,7 @@ async function createNewUser(username) {
 
 async function returnOneUser(userID) {
     try {
-        const user = await User.findOne({ _id: userID });
+        const user = await User.findById(userID);
         return user;
 
     } catch (err) {
@@ -61,6 +61,7 @@ async function createNewExercise(userID, description, duration, date) {
         });
 
         await newExercise.save();
+        // TODO: determine if i still need array of exercise references to better query for logs
         await User.updateOne({ _id: userID }, { $push: { exercises: newExercise.id } })
         return newExercise;
 

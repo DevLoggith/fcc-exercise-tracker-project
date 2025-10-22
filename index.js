@@ -61,7 +61,7 @@ app.post("/api/users/:_id/exercises", validateExerciseForm, async (req, res) => 
 
     const date = req.body.date;
 
-    // TODO: add validation to return error if no uses with that ID exists
+    // TODO: add validation to return error if no users with that ID exists
     try {
         const newExercise = await crud.createNewExercise(userID, description, duration, date);
         const updatedUser = await crud.returnOneUser(userID);
