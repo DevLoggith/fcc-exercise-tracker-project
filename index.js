@@ -65,13 +65,13 @@ app.post("/api/users/:_id/exercises", validateExerciseForm, async (req, res) => 
     try {
         const newExercise = await crud.createNewExercise(userID, description, duration, date);
         const updatedUser = await crud.returnOneUser(userID);
-        // TODO: find out why test #8 is not passing regarding the returned object
+
         res.status(201).json({
             username: updatedUser.username,
             description: newExercise.description,
             duration: newExercise.duration,
             date: newExercise.date,
-            _id: newExercise._id
+            _id: updatedUser._id
         });
     } catch (err) {
         res.status(500).json({ error: "An internal server error occurred" });
