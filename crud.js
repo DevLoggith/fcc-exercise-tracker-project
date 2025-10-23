@@ -3,7 +3,9 @@ import { User, Exercise } from './models.js';
 
 async function isExistingUser(username) {
     try {
-        const existingUser = await User.findOne({ username: username });
+        // .lean() returns plain JS object, not fully-functional Mongoose doc
+        // https://mongoosejs.com/docs/tutorials/lean.html#when-to-use-lean
+        const existingUser = await User.findOne({ username: username }).lean();
         if (existingUser) {
             return true;
         }
@@ -31,7 +33,9 @@ async function createNewUser(username) {
 
 async function returnOneUser(userID) {
     try {
-        const user = await User.findById(userID);
+        // .lean() returns plain JS object, not fully-functional Mongoose doc
+        // https://mongoosejs.com/docs/tutorials/lean.html#when-to-use-lean
+        const user = await User.findById(userID).lean();
         return user;
 
     } catch (err) {
@@ -42,7 +46,9 @@ async function returnOneUser(userID) {
 
 async function returnAllUsers() {
     try {
-        const allUsers = await User.find({});
+        // .lean() returns plain JS object, not fully-functional Mongoose doc
+        // https://mongoosejs.com/docs/tutorials/lean.html#when-to-use-lean
+        const allUsers = await User.find({}).lean();
         return allUsers;
 
     } catch (err) {
@@ -69,5 +75,23 @@ async function createNewExercise(userID, description, duration, date) {
     }
 }
 
+async function returnUserExercises(userID) {
+    try {
+        const userExercises = await Exercise.find({_id: userID}).lean();
+        return userExercises;
 
-export { isExistingUser, createNewUser, returnOneUser, returnAllUsers, createNewExercise };
+    } catch (err) {
+        console.error("error:", err.message);
+        throw err;
+    }
+}
+
+
+export {
+    isExistingUser,
+    createNewUser,
+    returnOneUser,
+    returnAllUsers,
+    createNewExercise,
+    returnUserExercises
+};
