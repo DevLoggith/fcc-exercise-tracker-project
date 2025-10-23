@@ -78,11 +78,33 @@ app.post("/api/users/:_id/exercises", validateExerciseForm, async (req, res) => 
     }
 });
 
-app.get("/api/users/:_id/logs{/:from}{/:to}{/:limit}", (req, res) => {
-    // returns a full exercise log of any user
-    // returns a user object with "count" property representing the number of exercises for that user
-    // returns the user object with a log field array thats an array of all the exercises added with
-        // "description", "duration", & "date" fields
+app.get("/api/users/:_id/logs{/:from}{/:to}{/:limit}", async (req, res) => {
+    const userID = req.params._id;
+
+    try {
+        const user = await crud.returnOneUser(userID);
+        const exercises = await crud.returnUserExercises(userID);
+        const count = exercises.length;
+        const exercisesArray = [];
+
+        // creates array for log parameter with only the data we need to return
+        for (const exercise of exercises) {
+            exercisesArray.push({
+                description: exercise.description,
+                duration: exercise.duration,
+                date: exercise.date
+            });
+        }
+
+        res.status(200).json({
+            username: user.username,
+            count: count,
+            _id: userID,
+            log: exercisesArray
+        });
+    } catch (err) {
+        res.status(500).json({ error: "An internal server error occurred" });
+    }
     // can add "from", "to", & "limit" parameters to request to receive part of the log
     // "from" & "to" should be yyyy-mm-dd format and "limit" should be an integer
 });

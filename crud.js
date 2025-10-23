@@ -77,7 +77,7 @@ async function createNewExercise(userID, description, duration, date) {
 
 async function returnUserExercises(userID) {
     try {
-        const userExercises = await Exercise.find({_id: userID}).lean();
+        const userExercises = await Exercise.find({user: userID}).lean();
         return userExercises;
 
     } catch (err) {
