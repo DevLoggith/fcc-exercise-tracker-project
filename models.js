@@ -5,11 +5,7 @@ const userSchema = new Schema({
 	username: {
 		type: String,
 		required: true,
-	},
-	exercises: [{
-		type: mongoose.Schema.Types.ObjectId,
-		ref: "Exercise"
-	}]
+	}
 });
 
 const exerciseSchema = new Schema({

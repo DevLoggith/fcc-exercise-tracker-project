@@ -61,8 +61,6 @@ async function createNewExercise(userID, description, duration, date) {
         });
 
         await newExercise.save();
-        // TODO: determine if i still need array of exercise references to better query for logs
-        await User.updateOne({ _id: userID }, { $push: { exercises: newExercise.id } })
         return newExercise;
 
     } catch (err) {
