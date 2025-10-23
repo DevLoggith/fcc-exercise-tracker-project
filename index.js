@@ -53,6 +53,8 @@ app.post("/api/users/:_id/exercises", validateExerciseForm, async (req, res) => 
     const duration = req.body.duration;
 
     // TODO: add additional validation for "date" to make sure it's (user) imputed in the correct format
+    // TODO dates need to be inputted in yyyy-mm-dd format and returned in dateString format of the
+    // Date API => e.g. "Thu Oct 23 2025"
     if (!req.body.date || req.body.date.trim() === "") {
         const date = new Date();
         const formattedDate = date.toISOString().split("T")[0];
@@ -80,12 +82,12 @@ app.post("/api/users/:_id/exercises", validateExerciseForm, async (req, res) => 
 
 app.get("/api/users/:_id/logs{/:from}{/:to}{/:limit}", async (req, res) => {
     const userID = req.params._id;
+    const exercisesArray = [];
 
     try {
         const user = await crud.returnOneUser(userID);
         const exercises = await crud.returnUserExercises(userID);
         const count = exercises.length;
-        const exercisesArray = [];
 
         // creates array for log parameter with only the data we need to return
         for (const exercise of exercises) {
