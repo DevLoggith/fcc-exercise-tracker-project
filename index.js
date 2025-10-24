@@ -20,7 +20,7 @@ app.get("/", (req, res) => {
 	res.sendFile(fileURLToPath(filePath));
 });
 
-
+// TODO: move data transformation/validation to new service layer
 app.route("/api/users")
     .post(validateUserForm, async (req, res) => {
         const lowerCaseUsername = req.body.username.toLowerCase();
@@ -51,17 +51,12 @@ app.post("/api/users/:_id/exercises", validateExerciseForm, async (req, res) => 
     const userID = req.params._id;
     const description = req.body.description;
     const duration = req.body.duration;
+    let date = new Date(req.body.date);
 
     // TODO: add additional validation for "date" to make sure it's (user) imputed in the correct format
-    // TODO dates need to be inputted in yyyy-mm-dd format and returned in dateString format of the
-    // Date API => e.g. "Thu Oct 23 2025"
     if (!req.body.date || req.body.date.trim() === "") {
-        const date = new Date();
-        const formattedDate = date.toISOString().split("T")[0];
-        req.body.date = formattedDate;
+        date = new Date();
     }
-
-    const date = req.body.date;
 
     // TODO: add validation to return error if no users with that ID exists
     try {
@@ -69,11 +64,11 @@ app.post("/api/users/:_id/exercises", validateExerciseForm, async (req, res) => 
         const updatedUser = await crud.returnOneUser(userID);
 
         res.status(201).json({
+            _id: updatedUser._id,
             username: updatedUser.username,
             description: newExercise.description,
             duration: newExercise.duration,
-            date: newExercise.date,
-            _id: updatedUser._id
+            date: newExercise.date.toDateString()
         });
     } catch (err) {
         res.status(500).json({ error: "An internal server error occurred" });
@@ -94,14 +89,14 @@ app.get("/api/users/:_id/logs{/:from}{/:to}{/:limit}", async (req, res) => {
             exercisesArray.push({
                 description: exercise.description,
                 duration: exercise.duration,
-                date: exercise.date
+                date: exercise.date.toDateString()
             });
         }
 
         res.status(200).json({
+            _id: userID,
             username: user.username,
             count: count,
-            _id: userID,
             log: exercisesArray
         });
     } catch (err) {
