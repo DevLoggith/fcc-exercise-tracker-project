@@ -53,7 +53,6 @@ app.post("/api/users/:_id/exercises", validateExerciseForm, async (req, res) => 
     const duration = req.body.duration;
     let date = new Date(req.body.date);
 
-    // TODO: add additional validation for "date" to make sure it's (user) imputed in the correct format
     if (!req.body.date || req.body.date.trim() === "") {
         date = new Date();
     }
