@@ -79,6 +79,15 @@ app.get("/api/users/:_id/logs{/:from}{/:to}{/:limit}", async (req, res) => {
     const userID = req.params._id;
     const exercisesArray = [];
 
+    const from = req.params.from;
+    const to = req.params.to;
+    const limit = req.params.limit;
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+
+    if (!dateRegex.test(from) || !dateRegex.test(to)) {
+        return res.status(422).json({error: "improper date format. format should be 'YYYY-MM-DD'"});
+    }
+
     try {
         const user = await crud.returnOneUser(userID);
         const exercises = await crud.returnUserExercises(userID);
