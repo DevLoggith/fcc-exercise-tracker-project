@@ -75,10 +75,18 @@ app.post("/api/users/:_id/exercises", validateExerciseForm, async (req, res) => 
 });
 
 app.get("/api/users/:_id/logs", async (req, res) => {
+    if (req.query.from || req.query.to) {
+        const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+        
+        if (!dateRegex.test(req.query.from) || !dateRegex.test(req.query.to)) {
+            return res.status(422).json({error: "improper date format. format should be 'YYYY-MM-DD'"});
+        }
+    }
+
+    const userID = req.params._id;
     const from = req.query.from;
     const to = req.query.to;
     const limit = req.query.limit;
-    const userID = req.params._id;
     const exercisesArray = [];
 
     try {

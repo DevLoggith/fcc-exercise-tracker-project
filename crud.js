@@ -31,6 +31,7 @@ async function createNewUser(username) {
     }
 }
 
+// TODO: refactor user query functions into just one function
 async function returnOneUser(userID) {
     try {
         // .lean() returns plain JS object, not fully-functional Mongoose doc
