@@ -89,7 +89,7 @@ app.get("/api/users/:_id/logs{/:from}{/:to}{/:limit}", async (req, res) => {
 
     try {
         const user = await crud.returnOneUser(userID);
-        const exercises = await crud.returnUserExercises(userID);
+        const exercises = await crud.returnUserExercises(userID, from, to, limit);
         const count = exercises.length;
 
         // creates array for log parameter with only the data we need to return

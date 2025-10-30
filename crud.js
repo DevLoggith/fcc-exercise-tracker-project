@@ -75,9 +75,20 @@ async function createNewExercise(userID, description, duration, date) {
     }
 }
 
-async function returnUserExercises(userID) {
+async function returnUserExercises(userID, from, to, limit) {
+    const query = { user: userID };
+
+    if (from || to) {
+        query.date = {};
+        if (from) query.date.$gte = from;
+        if (to) query.date.$lt = to;
+    }
+
     try {
-        const userExercises = await Exercise.find({user: userID}).lean();
+        const userExercises = await Exercise.find(query)
+            .limit(limit)
+            .lean();
+        
         return userExercises;
 
     } catch (err) {
