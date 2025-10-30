@@ -74,18 +74,12 @@ app.post("/api/users/:_id/exercises", validateExerciseForm, async (req, res) => 
     }
 });
 
-app.get("/api/users/:_id/logs{/:from}{/:to}{/:limit}", async (req, res) => {
+app.get("/api/users/:_id/logs", async (req, res) => {
+    const from = req.query.from;
+    const to = req.query.to;
+    const limit = req.query.limit;
     const userID = req.params._id;
     const exercisesArray = [];
-
-    const from = req.params.from;
-    const to = req.params.to;
-    const limit = req.params.limit;
-    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-
-    if (!dateRegex.test(from) || !dateRegex.test(to)) {
-        return res.status(422).json({error: "improper date format. format should be 'YYYY-MM-DD'"});
-    }
 
     try {
         const user = await crud.returnOneUser(userID);
@@ -110,8 +104,6 @@ app.get("/api/users/:_id/logs{/:from}{/:to}{/:limit}", async (req, res) => {
     } catch (err) {
         res.status(500).json({ error: "An internal server error occurred" });
     }
-    // can add "from", "to", & "limit" parameters to request to receive part of the log
-    // "from" & "to" should be yyyy-mm-dd format and "limit" should be an integer
 });
 
 const listener = app.listen(process.env.PORT || 3000, () => {
