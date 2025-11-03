@@ -1,4 +1,5 @@
-import { User, Exercise } from './models.js';
+import { User } from './models/user.js';
+import { Exercise } from './models/exercise.js';
 
 
 async function isExistingUser(username) {
