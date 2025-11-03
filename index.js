@@ -3,7 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 
-import { connectDB } from './db.js';
+import { connectDB } from './config/db.js';
 import { validateUserForm, validateExerciseForm } from './helpers.js';
 import * as crud from './crud.js';
 
