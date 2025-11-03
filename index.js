@@ -5,7 +5,8 @@ import { fileURLToPath } from 'url';
 
 import { connectDB } from './config/db.js';
 import { validateUserForm, validateExerciseForm } from './helpers.js';
-import * as crud from './crud.js';
+import * as userRepo from './repositories/userRepo.js';
+import * as exerciseRepo from './repositories/exerciseRepo.js';
 
 
 const app = express();
@@ -26,11 +27,11 @@ app.route("/api/users")
         const lowerCaseUsername = req.body.username.toLowerCase();
 
         try {
-            if (await crud.isExistingUser(lowerCaseUsername)) {
+            if (await userRepo.isExistingUser(lowerCaseUsername)) {
                 return res.status(409).json({ error: "username already in use" });
             }
 
-            const newSavedUser = await crud.createNewUser(lowerCaseUsername);
+            const newSavedUser = await userRepo.createNewUser(lowerCaseUsername);
             res.status(201).json({ username: newSavedUser.username, _id: newSavedUser.id });
 
         } catch (err) {
@@ -40,7 +41,7 @@ app.route("/api/users")
 
     .get (async (req, res) => {
         try {
-            const allUsers = await crud.returnAllUsers();
+            const allUsers = await userRepo.returnAllUsers();
             res.status(200).json(allUsers);
         } catch (err) {
             res.status(500).json({ error: "An internal server error occurred" });
@@ -59,8 +60,8 @@ app.post("/api/users/:_id/exercises", validateExerciseForm, async (req, res) => 
 
     // TODO: add validation to return error if no users with that ID exists
     try {
-        const newExercise = await crud.createNewExercise(userID, description, duration, date);
-        const updatedUser = await crud.returnOneUser(userID);
+        const newExercise = await exerciseRepo.createNewExercise(userID, description, duration, date);
+        const updatedUser = await userRepo.returnOneUser(userID);
 
         res.status(201).json({
             _id: updatedUser._id,
@@ -90,8 +91,8 @@ app.get("/api/users/:_id/logs", async (req, res) => {
     const exercisesArray = [];
 
     try {
-        const user = await crud.returnOneUser(userID);
-        const exercises = await crud.returnUserExercises(userID, from, to, limit);
+        const user = await userRepo.returnOneUser(userID);
+        const exercises = await exerciseRepo.returnUserExercises(userID, from, to, limit);
         const count = exercises.length;
 
         // creates array for log parameter with only the data we need to return
