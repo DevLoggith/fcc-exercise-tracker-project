@@ -1,4 +1,3 @@
-// TODO: move Express responses to endpoint routes
 function validateUserForm(req, res, next) {
     if (!req.body.username || req.body.username.trim() === "") {
         return res.status(422).json({ error: "username can not be empty" });

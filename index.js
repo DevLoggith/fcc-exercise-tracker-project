@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 
 import { connectDB } from './config/db.js';
-import { validateUserForm, validateExerciseForm } from './helpers.js';
+import { validateUserForm, validateExerciseForm } from './utils/formValidation.js';
 import * as userRepo from './repositories/userRepo.js';
 import * as exerciseRepo from './repositories/exerciseRepo.js';
 
@@ -21,7 +21,6 @@ app.get("/", (req, res) => {
 	res.sendFile(fileURLToPath(filePath));
 });
 
-// TODO: move data transformation/validation to new service layer
 app.route("/api/users")
     .post(validateUserForm, async (req, res) => {
         const lowerCaseUsername = req.body.username.toLowerCase();
