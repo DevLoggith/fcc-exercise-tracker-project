@@ -2,6 +2,8 @@
 
 For my solution to the FreeCodeCamp Back End Development and APIs Exercise Tracker project I created a modern, RESTful API service for tracking exercises, built with Express.js and MongoDB. This project demonstrates clean architecture principles, modern JavaScript practices, and robust error handling.
 
+The boilerplate code for this project which my solution is built on top of can be found here: [FCC exercise tracker project boilerplate](https://github.com/freeCodeCamp/boilerplate-project-exercisetracker/)
+
 ## Technologies & Architecture
 
 ### Core Technologies
