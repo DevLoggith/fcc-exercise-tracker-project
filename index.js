@@ -64,41 +64,21 @@ app.post("/api/users/:_id/exercises", validateExerciseForm, async (req, res) => 
 });
 
 app.get("/api/users/:_id/logs", async (req, res) => {
-    if (req.query.from || req.query.to) {
-        const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-        
-        if (!dateRegex.test(req.query.from) || !dateRegex.test(req.query.to)) {
-            return res.status(422).json({error: "improper date format. format should be 'YYYY-MM-DD'"});
-        }
-    }
-
-    const userID = req.params._id;
-    const from = req.query.from;
-    const to = req.query.to;
-    const limit = req.query.limit;
-    const exercisesArray = [];
-
     try {
-        const user = await userRepo.returnOneUser(userID);
-        const exercises = await exerciseRepo.returnUserExercises(userID, from, to, limit);
-        const count = exercises.length;
+        const userLogs = await exerciseService.getUserLogs(
+            req.params._id,
+            req.query.from,
+            req.query.to,
+            req.query.limit
+        );
+        res.status(200).json(userLogs);
 
-        // creates array for log parameter with only the data we need to return
-        for (const exercise of exercises) {
-            exercisesArray.push({
-                description: exercise.description,
-                duration: exercise.duration,
-                date: exercise.date.toDateString()
+    } catch (err) {
+        if (err.message === "INVALID_DATE_FORMAT") {
+            return res.status(422).json({
+                error: "improper date format. format should be 'YYYY-MM-DD'"
             });
         }
-
-        res.status(200).json({
-            _id: userID,
-            username: user.username,
-            count: count,
-            log: exercisesArray
-        });
-    } catch (err) {
         res.status(500).json({ error: "An internal server error occurred" });
     }
 });
