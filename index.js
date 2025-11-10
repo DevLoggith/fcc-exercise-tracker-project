@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import { connectDB } from './config/db.js';
 import { validateUserForm, validateExerciseForm } from './utils/formValidation.js';
 import * as userRepo from './repositories/userRepo.js';
+import * as userService from './services/userService.js';
 import * as exerciseRepo from './repositories/exerciseRepo.js';
 
 
@@ -23,17 +24,15 @@ app.get("/", (req, res) => {
 
 app.route("/api/users")
     .post(validateUserForm, async (req, res) => {
-        const lowerCaseUsername = req.body.username.toLowerCase();
-
         try {
-            if (await userRepo.isExistingUser(lowerCaseUsername)) {
+            const newUser = await userService.createUser(req.body.username);
+            res.status(201).json({ username: newUser.username, _id: newUser.id });
+
+        } catch (err) {
+            if (err.message === "USERNAME_EXISTS") {
                 return res.status(409).json({ error: "username already in use" });
             }
 
-            const newSavedUser = await userRepo.createNewUser(lowerCaseUsername);
-            res.status(201).json({ username: newSavedUser.username, _id: newSavedUser.id });
-
-        } catch (err) {
             res.status(500).json({ error: "An internal server error occurred" });
         }
     })
