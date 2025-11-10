@@ -6,8 +6,9 @@ import { fileURLToPath } from 'url';
 import { connectDB } from './config/db.js';
 import { validateUserForm, validateExerciseForm } from './utils/formValidation.js';
 import * as userRepo from './repositories/userRepo.js';
-import * as userService from './services/userService.js';
 import * as exerciseRepo from './repositories/exerciseRepo.js';
+import * as userService from './services/userService.js';
+import * as exerciseService from './services/exerciseService.js';
 
 
 const app = express();
@@ -47,27 +48,16 @@ app.route("/api/users")
     })
 
 app.post("/api/users/:_id/exercises", validateExerciseForm, async (req, res) => {
-    const userID = req.params._id;
-    const description = req.body.description;
-    const duration = req.body.duration;
-    let date = new Date(req.body.date);
-
-    if (!req.body.date || req.body.date.trim() === "") {
-        date = new Date();
-    }
-
     // TODO: add validation to return error if no users with that ID exists
     try {
-        const newExercise = await exerciseRepo.createNewExercise(userID, description, duration, date);
-        const updatedUser = await userRepo.returnOneUser(userID);
-
-        res.status(201).json({
-            _id: updatedUser._id,
-            username: updatedUser.username,
-            description: newExercise.description,
-            duration: newExercise.duration,
-            date: newExercise.date.toDateString()
-        });
+        const result = await exerciseService.addExercise(
+            req.params._id,
+            req.body.description,
+            req.body.duration,
+            req.body.date
+        );
+        res.status(200).json(result);
+        
     } catch (err) {
         res.status(500).json({ error: "An internal server error occurred" });
     }
