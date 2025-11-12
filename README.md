@@ -12,15 +12,36 @@ The boilerplate code for this project which my solution is built on top of can b
 -   **MongoDB & Mongoose** - Database with ODM for data validation and modeling
 -   **ESM Modules** - Modern JavaScript module system
 
+### 3-Tier Architecture
+
+This project implements a proper 3-tier architecture with clear separation of concerns:
+
+**Presentation Layer**
+- `views/` - Frontend HTML interface
+- `public/` - Static assets (CSS, client-side scripts)
+- Route handlers in `index.js` manage HTTP requests and responses
+
+**Business Logic Layer**
+- `services/` - Core business logic and application workflows
+- `utils/` - Middleware for validation and request processing
+- Orchestrates data operations and enforces business rules
+
+**Data Access Layer**
+- `repositories/` - Data access patterns abstracting database operations
+- `models/` - Mongoose schema definitions and data models
+- `config/` - Database configuration and connection management
+
 ### Project Structure
 
 ```
 ├── views/         # Presentation Layer - HTML frontend
-├── index.js       # Controller Layer - Route handling and request processing
-├── utils/         # Middleware Layer - Form request validation and error handling
+├── public/        # Presentation Layer - Static assets
+├── index.js       # Presentation Layer - Route handlers & Request/Response management
+├── services/      # Business Logic Layer - Core application logic
+├── utils/         # Business Logic Layer - Validation middleware
 ├── repositories/  # Data Access Layer - Database operations
-├── models/        # Data Model Layer - Schema definitions
-└── config/        # Configuration Layer - Database and environment setup
+├── models/        # Data Access Layer - Schema definitions
+└── config/        # Data Access Layer - Database setup
 ```
 
 ### Key Features
@@ -28,9 +49,10 @@ The boilerplate code for this project which my solution is built on top of can b
 1. **Clean Architecture**
 
     - Repository pattern for database operations
-    - Clear separation of concerns
+    - Service layer for business logic orchestration
+    - Clear separation of concerns across three tiers
     - Modular design with independent layers
-    - Structured data flow: Request → Controller → Repository → Model → Database
+    - Structured data flow: Request → Service → Repository → Model → Database
 
 2. **Modern Development Practices**
 
@@ -42,7 +64,7 @@ The boilerplate code for this project which my solution is built on top of can b
 3. **Robust Validation & Error Handling**
     - Middleware-based request validation
     - Input sanitization and type checking
-    - Structured error responses with propagation and layer specific handling
+    - Structured error responses with propagation and layer-specific handling
 
 ## Test cases
 
