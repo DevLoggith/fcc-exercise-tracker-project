@@ -6,7 +6,6 @@ import { fileURLToPath } from 'url';
 import { connectDB } from './config/db.js';
 import { validateUserForm, validateExerciseForm } from './utils/formValidation.js';
 import * as userRepo from './repositories/userRepo.js';
-import * as exerciseRepo from './repositories/exerciseRepo.js';
 import * as userService from './services/userService.js';
 import * as exerciseService from './services/exerciseService.js';
 
